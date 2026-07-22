@@ -279,12 +279,17 @@ async def _resolve_context(
         ) from exc
 
 
+def _normalise_provider_config(provider_config: dict[str, Any]) -> dict[str, Any]:
+    config = dict(provider_config)
+    if "api_base" not in config and config.get("base_url"):
+        config["api_base"] = config["base_url"]
+    return config
+
+
 def _build_litellm_kwargs(
     context: GatewayContext, payload: dict[str, Any]
 ) -> dict[str, Any]:
-    provider_config = dict(context.provider_config)
-    if "api_base" not in provider_config and provider_config.get("base_url"):
-        provider_config["api_base"] = provider_config["base_url"]
+    provider_config = _normalise_provider_config(context.provider_config)
     kwargs = {
         key: value
         for key, value in payload.items()
@@ -293,7 +298,11 @@ def _build_litellm_kwargs(
     }
     kwargs.update(provider_config)
     kwargs["model"] = payload["model"]
+    if "service_tier" in kwargs:
+        del kwargs["service_tier"]
     return kwargs
+
+
 
 
 def _build_record(

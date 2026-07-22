@@ -14,7 +14,7 @@ RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen --no-dev --no-ins
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-RUN useradd --create-home --uid 10001 proxy \
+RUN id -u proxy >/dev/null 2>&1 || useradd --create-home --uid 10001 proxy \
     && mkdir -p /var/lib/reclaimllm-enterprise-proxy \
     && chown proxy /var/lib/reclaimllm-enterprise-proxy
 USER proxy

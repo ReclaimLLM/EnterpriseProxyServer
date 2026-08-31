@@ -23,6 +23,24 @@ Supported endpoints (mirroring the OpenAI API shape):
 - `POST /{enterprise_slug}/v1/embeddings`
 - `GET /health`
 
+### Schema-aware model tests
+
+Provider credential tests use an OpenAPI document to map models to the correct
+inference operation instead of treating every model as chat completion. The
+proxy exclusively owns the published OpenAI, Azure OpenAI, Anthropic, and
+Moonshot/Kimi specification URLs. Browsers and the ReclaimLLM backend neither
+store nor supply OpenAPI locations.
+
+The proxy downloads at most 5 MiB, normalizes GitHub `blob` links to raw content,
+caches parsed operations for six hours, and never forwards the spec URL to
+LiteLLM. Model enums in the schema take precedence, followed by LiteLLM model
+metadata and conservative name-based fallback. Supported test methods are chat
+completions, Responses, embeddings, image generation, speech, transcription,
+moderation, legacy text completions, and video generation. Realtime models are
+rejected explicitly because they require a stateful WebSocket session rather
+than a bounded dummy request. Schema-loading failures fall back rather
+than blocking an otherwise valid provider test.
+
 Requests are authenticated with a gateway key (`Authorization: Bearer <key>`) scoped to an organization by `{enterprise_slug}`. If a backend ingest call fails, the record is appended to a local JSONL queue (`GATEWAY_LOG_QUEUE_PATH`) instead of being dropped.
 
 ## Run locally

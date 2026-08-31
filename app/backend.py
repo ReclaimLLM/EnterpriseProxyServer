@@ -26,6 +26,14 @@ class GatewayContext:
     provider_config: dict[str, Any]
 
 
+@dataclass(frozen=True)
+class ModelAnalysisContext:
+    org_id: str
+    org_slug: str
+    provider: str
+    provider_config: dict[str, Any]
+
+
 class BackendClient:
     def __init__(self) -> None:
         self._client = httpx.AsyncClient(
@@ -60,6 +68,36 @@ class BackendClient:
             team_id=data["team_id"],
             user_id=data["user_id"],
             key_id=data["key_id"],
+            provider=data["provider"],
+            provider_config=data["provider_config"],
+        )
+
+    async def resolve_model_analysis(
+        self,
+        *,
+        org_id: str,
+        run_id: str,
+        result_id: str,
+        purpose: str,
+        model: str,
+    ) -> ModelAnalysisContext:
+        response = await self._client.post(
+            "/api/enterprise/gateway/model-analysis/resolve",
+            headers={"X-Proxy-Secret": settings.proxy_shared_secret},
+            json={
+                "org_id": org_id,
+                "run_id": run_id,
+                "result_id": result_id,
+                "purpose": purpose,
+                "model": model,
+            },
+        )
+        if response.status_code >= 400:
+            raise BackendError(response.status_code, _extract_error(response))
+        data = response.json()
+        return ModelAnalysisContext(
+            org_id=data["org_id"],
+            org_slug=data["org_slug"],
             provider=data["provider"],
             provider_config=data["provider_config"],
         )

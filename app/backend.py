@@ -102,6 +102,25 @@ class BackendClient:
             provider_config=data["provider_config"],
         )
 
+    async def list_gateway_models(
+        self,
+        *,
+        org_slug: str,
+        bearer_token: str,
+    ) -> list[dict[str, Any]]:
+        response = await self._client.post(
+            "/api/enterprise/gateway/models",
+            headers={
+                "Authorization": f"Bearer {bearer_token}",
+                "X-Proxy-Secret": settings.proxy_shared_secret,
+            },
+            json={"org_slug": org_slug},
+        )
+        if response.status_code >= 400:
+            raise BackendError(response.status_code, _extract_error(response))
+        data = response.json()
+        return data.get("models", [])
+
 def _extract_error(response: httpx.Response) -> str:
     try:
         body = response.json()

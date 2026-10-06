@@ -45,6 +45,11 @@ class Settings(BaseSettings):
         default=15.0,
         validation_alias="LOG_FLUSH_INTERVAL_SECONDS",
     )
+    posthog_key: str | None = Field(default=None, validation_alias="POSTHOG_KEY")
+    posthog_host: str = Field(
+        default="https://us.i.posthog.com",
+        validation_alias="POSTHOG_HOST",
+    )
 
     @property
     def supabase_rest_url(self) -> str:

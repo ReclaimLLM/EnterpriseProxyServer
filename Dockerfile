@@ -9,7 +9,6 @@ WORKDIR /app
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 COPY pyproject.toml uv.lock ./
-COPY app ./app
 RUN --mount=type=cache,target=/root/.cache/uv uv sync --frozen --no-dev --no-install-project
 
 ENV PATH="/app/.venv/bin:$PATH"
@@ -17,6 +16,8 @@ ENV PATH="/app/.venv/bin:$PATH"
 RUN id -u proxy >/dev/null 2>&1 || useradd --create-home --uid 10001 proxy \
     && mkdir -p /var/lib/reclaimllm-enterprise-proxy \
     && chown proxy /var/lib/reclaimllm-enterprise-proxy
+
+COPY app ./app
 USER proxy
 
 EXPOSE 8779

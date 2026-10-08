@@ -95,6 +95,17 @@ docker run --rm -p 8779:8779 --env-file .env rclm-enterprise-proxy
 uv sync --extra dev
 uv run pytest
 ```
+## License
+
+Copyright © 2026 ReclaimLLM. All rights not granted below are reserved.
+
+This repository is source-available under the [Elastic License 2.0](LICENSE) (ELv2). You may use, copy, modify, and self-host it, including inside your own organization. You may not:
+
+- provide it to third parties as a hosted or managed service that gives them access to a substantial part of its features,
+- move, change, disable, or get around any license-key functionality, or
+- remove or obscure any licensing, copyright, or other notices.
+
+See [LICENSE](LICENSE) for the full terms. For commercial licensing, contact info@reclaimllm.com.
 
 ## Learn more
 
